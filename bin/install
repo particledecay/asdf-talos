@@ -10,8 +10,8 @@ set \
 : ${ASDF_INSTALL_VERSION?}
 : ${ASDF_INSTALL_PATH?}
 
-readonly repository="etcd-io/etcd"
-readonly toolname="etcdctl"
+readonly repository="talos-systems/talos"
+readonly toolname="osctl"
 
 # make a temporary download directory with a cleanup hook
 readonly TMP_DOWNLOAD_DIR="$(mktemp -d -t "asdf_${toolname}_XXXXXX")"
@@ -34,20 +34,8 @@ install() {
         echo "Creating ${toolname} bin directory"
         mkdir -p "${bin_install_path}"
 
-        extracted=
-        if [[ $download_path == *.tar.gz ]]; then
-            echo "Extracting ${toolname} tar archive"
-            tar xvf "${download_path}" --strip-components=1 -C "$bin_install_path" "$(basename -s .tar.gz "$download_path")/$toolname" 2> /dev/null
-            [ $? -eq 0 ] && extracted=true
-        elif [[ $download_path == *.zip ]]; then
-            echo "Extracting ${toolname} zip archive"
-            unzip -d "$bin_install_path" "${download_path}" "$(basename -s .zip "$download_path")/$toolname" 2> /dev/null
-            [ $? -eq 0 ] && extracted=true
-        fi
-        if [ -z $extracted ]; then
-            echo "Error: did not properly extract ${toolname} from archive"
-            exit 1
-        fi
+        echo "Copying ${toolname}"
+        cp "${download_path}/${toolname}" "${bin_install_path}/${toolname}"
     else
         echo "Error: ${toolname} version ${version} not found" >&2
         exit 1
@@ -61,18 +49,7 @@ get_arch() {
 get_download_url() {
     local -r version="$1"
     local -r arch="$(get_arch)"
-    # we have to do this because some downloads are .tar.gz and some are .zip files
-    cmd="curl -s"
-    if [ -n "${OAUTH_TOKEN:-}" ]; then
-        cmd="$cmd -H 'Authorization: token $OAUTH_TOKEN'"
-    fi
-    local -r url="$($cmd https://api.github.com/repos/$repository/releases |\
-                    jq -r \
-                    --arg version "$version" \
-                    --arg arch "$arch" \
-                    --arg repo "$repository" \
-                    '.[] | select(.tag_name==$version).assets[] | select((.name | contains($arch + "-amd64")) and ((.browser_download_url | endswith(".tar.gz")) or (.browser_download_url | endswith(".zip")))).browser_download_url')"
-    echo $url
+    echo "https://github.com/$repository/releases/download/$version/${toolname}-${arch}-amd64"
 }
 
 install "${ASDF_INSTALL_TYPE}" "${ASDF_INSTALL_VERSION}" "${ASDF_INSTALL_PATH}"
