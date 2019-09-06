@@ -35,7 +35,7 @@ install() {
         mkdir -p "${bin_install_path}"
 
         echo "Copying ${toolname}"
-        cp "${download_path} "${bin_install_path}/${toolname}"
+        cp "${download_path}" "${bin_install_path}/${toolname}"
     else
         echo "Error: ${toolname} version ${version} not found" >&2
         exit 1
