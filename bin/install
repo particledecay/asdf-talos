@@ -34,10 +34,11 @@ install() {
         echo "Creating ${toolname} bin directory"
         mkdir -p "${bin_install_path}"
 
-        echo "Copying ${toolname} to ${bin_install_path}"
-        mv "${download_path}" "${bin_install_path}/${toolname}"
+        echo "Moving ${toolname} to ${bin_install_path}"
+        mv "${download_path}" "${bin_install_path}/${toolname}" && \
+        chmod +x "${bin_install_path}/${toolname}"
         if [ $? -ne 0 ]; then
-            echo "Error: could not copy ${toolname} to install location" >&2
+            echo "Error: could not move ${toolname} to install location" >&2
             exit 1
         fi
     else
