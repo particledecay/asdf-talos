@@ -1,19 +1,4 @@
 language: c
-addons:
-  apt:
-    packages:
-      - jq
-  homebrew:
-    packages:
-      - jq
-    update: true
-
-before_cache:
-  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew cleanup; fi
-cache:
-  directories:
-    - $HOME/Library/Caches/Homebrew
-    - /usr/local/Homebrew
 
 script: asdf plugin-test osctl $TRAVIS_BUILD_DIR 'osctl'
 before_script:
