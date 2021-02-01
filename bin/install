@@ -38,7 +38,14 @@ get_os() {
 }
 
 get_arch() {
-  uname -m
+  local -r arch=$(uname -m)
+
+  if [[ "x$arch" == "xx86_64" ]]
+  then
+    echo "amd64"
+  else
+    echo "$arch"
+  fi
 }
 
 install
