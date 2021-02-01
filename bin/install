@@ -22,6 +22,7 @@ install() {
 
   echo "Installing ${toolname} from git repository"
   [ ! -d "${ASDF_INSTALL_PATH}/bin" ] && mkdir -p "${ASDF_INSTALL_PATH}/bin"
+  chmod +x "$download_pkg"
   cp "$download_pkg" "${ASDF_INSTALL_PATH}/bin/${toolname}" 2>/dev/null
   if [ $? -eq 0 ]
   then
