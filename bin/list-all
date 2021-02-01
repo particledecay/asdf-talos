@@ -7,10 +7,15 @@ set \
 
 readonly repository="talos-systems/talos"
 
-cmd="curl -s"
-if [ -n "${OAUTH_TOKEN:-}" ]; then
-    cmd="$cmd -H 'Authorization: token $OAUTH_TOKEN'"
+CURL="curl -s"
+if [ -n "${OAUTH_TOKEN:-}" ];
+then
+  CURL="$CURL -H 'Authorization: token $OAUTH_TOKEN'"
 fi
-cmd="$cmd https://api.github.com/repos/$repository/releases"
-versions=$(eval $cmd | grep tag_name | sed 's/"tag_name": //g;s/"//g;s/,//g' | sort --version-sort -r | xargs)
-echo $versions
+
+function sort_versions() {
+  LC_ALL=C sort -t. -k 1,1 -k 2,2 -k 3,3
+}
+
+versions=$($CURL -fsL "https://api.github.com/repos/$repository/releases" | grep tag_name | sed 's/"tag_name": //g;s/"//g;s/,//g;s/v//g')
+echo "$versions" | sort_versions | xargs
